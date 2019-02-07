@@ -11,6 +11,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.View;
 import android.view.animation.AnticipateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -29,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View view) {
                 view.animate().rotationBy(360f)
                         .setDuration(1000)
-                        .setInterpolator(new AnticipateInterpolator());
+                        .setInterpolator(new AnticipateOvershootInterpolator());
             }
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

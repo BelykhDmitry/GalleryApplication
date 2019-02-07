@@ -42,13 +42,13 @@ public class MyAnimation {
     public Completable moveRectange(View view) {
         int dx = view.getLeft() - view.getPaddingLeft();
         int dy = view.getTop() - view.getPaddingTop() - (mLayoutHigh);
-        return animateLeft(view, dx)
-                .andThen(animateUp(view, dy))
-                .andThen(animateRight(view, dx))
+        return animateByX(view, dx)
+                .andThen(animateByY(view, dy))
+                .andThen(animateByX(view, -dx))
                 .andThen(animateDown(view, dy));
     }
 
-    private Completable animateLeft(View view, int dx) {
+    private Completable animateByX(View view, int dx) {
         CompletableSubject animationSubject = CompletableSubject.create();
         return animationSubject.doOnSubscribe(new Consumer<Disposable>() {
             @Override
@@ -64,7 +64,7 @@ public class MyAnimation {
         });
     }
 
-    private Completable animateUp(View view, int dy) {
+    private Completable animateByY(View view, int dy) {
         CompletableSubject animationSubject = CompletableSubject.create();
         return animationSubject.doOnSubscribe(new Consumer<Disposable>() {
             @Override
@@ -72,21 +72,6 @@ public class MyAnimation {
                 ViewCompat.animate(view)
                         .setDuration(animate_time_Y)
                         .yBy(-dy)
-                        .withEndAction(() ->
-                                animationSubject.onComplete()
-                        );
-            }
-        });
-    }
-
-    private Completable animateRight(View view, int dx) {
-        CompletableSubject animationSubject = CompletableSubject.create();
-        return animationSubject.doOnSubscribe(new Consumer<Disposable>() {
-            @Override
-            public void accept(Disposable disposable) throws Exception {
-                ViewCompat.animate(view)
-                        .setDuration(animate_time_X)
-                        .xBy(dx)
                         .withEndAction(() ->
                                 animationSubject.onComplete()
                         );
