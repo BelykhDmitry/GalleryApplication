@@ -46,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 myAnimation.setToolbarHigh(findViewById(R.id.toolbar).getHeight());
                 myAnimation.setLayoutWidth(findViewById(R.id.parent_content_layout).getWidth());
-                myAnimation.moveRectange(view).subscribe();
+                //myAnimation.moveRectange(view).subscribe();
+                //myAnimation.animateRectangleWithAnimationSet(view);
+                myAnimation.animateRectangleWithAnimatorSet(view);
             }
         });
 
