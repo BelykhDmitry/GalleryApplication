@@ -11,6 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -30,11 +31,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setupTheme();
+        //setupTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
@@ -64,10 +65,10 @@ public class MainActivity extends AppCompatActivity {
         openFragment(ALBUMS);
     }
 
-    private void setupTheme() { //Not working
-        Resources.Theme theme = getTheme();
-        theme.applyStyle(R.style.LightTheme, true);
-    }
+//    private void setupTheme() { //Not working
+//        Resources.Theme theme = getTheme();
+//        theme.applyStyle(R.style.LightTheme, true);
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

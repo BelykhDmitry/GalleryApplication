@@ -7,7 +7,7 @@
         <item name="colorAccent">@color/secondaryColor</item>
     </style>
 
-    <style name="LightTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!--<style name="LightTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/primaryLightColor</item>
         <item name="colorPrimaryDark">@color/primaryColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
@@ -17,7 +17,7 @@
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryDarkColor</item>
-    </style>
+    </style> -->
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
