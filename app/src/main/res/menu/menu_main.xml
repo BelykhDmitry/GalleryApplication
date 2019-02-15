@@ -8,5 +8,5 @@
         android:title="@string/action_settings"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:iconTint="?attr/colorAccent" />  <!-- TODO: Tint not working -->
+        android:iconTint="@color/colorAccent" />
 </menu>

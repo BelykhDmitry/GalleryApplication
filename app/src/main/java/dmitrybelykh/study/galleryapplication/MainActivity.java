@@ -6,21 +6,14 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.LinearInterpolator;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.concurrent.CompletableFuture;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.ViewCompat;
-import io.reactivex.Completable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.subjects.CompletableSubject;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,12 +21,20 @@ public class MainActivity extends AppCompatActivity {
 
     private MyAnimation myAnimation;
 
+    private int fragmentState = 1;
+
+    private static final int ALBUMS = 1;
+    private static final int PHOTOS = 2;
+    private static final int MAPS = 3;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setupTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         Point point = new Point();
         getWindowManager().getDefaultDisplay().getSize(point);
@@ -41,18 +42,26 @@ public class MainActivity extends AppCompatActivity {
         myAnimation.setAnimationSpeed(5f);
 
         fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myAnimation.setToolbarHigh(findViewById(R.id.toolbar).getHeight());
-                myAnimation.setLayoutWidth(findViewById(R.id.parent_content_layout).getWidth());
-                //myAnimation.moveRectange(view).subscribe();
-                //myAnimation.animateRectangleWithAnimationSet(view);
-                myAnimation.animateRectangleWithAnimatorSet(view);
-            }
-        });
 
-        setupTheme();
+        BottomNavigationView navigationView = findViewById(R.id.navigation);
+        navigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.navigation_albums:
+                    if (fragmentState != ALBUMS)
+                        openFragment(ALBUMS);
+                    return true;
+                case R.id.navigation_photos:
+                    if (fragmentState != PHOTOS)
+                        openFragment(PHOTOS);
+                    return true;
+                case R.id.navigation_map:
+                    if (fragmentState != MAPS)
+                        openFragment(MAPS);
+                    return true;
+            }
+            return false;
+        });
+        openFragment(ALBUMS);
     }
 
     private void setupTheme() { //Not working
@@ -86,5 +95,40 @@ public class MainActivity extends AppCompatActivity {
     public void openSettings() {
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
         startActivity(intent);
+    }
+
+    private void openFragment(int fragmentNumber) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment newFragment = null;
+        String tag = null;
+        switch (fragmentNumber) {
+            case ALBUMS:
+                newFragment = fragmentManager.findFragmentByTag(AlbumsFragment.class.getName());
+                if (newFragment == null)
+                    newFragment = new AlbumsFragment();
+                tag = AlbumsFragment.class.getName();
+                fragmentState = ALBUMS;
+                break;
+            case PHOTOS:
+                newFragment = fragmentManager.findFragmentByTag(PhotosFragment.class.getName());
+                if (newFragment == null)
+                    newFragment = new PhotosFragment();
+                tag = PhotosFragment.class.getName();
+                fragmentState = PHOTOS;
+                break;
+            case MAPS:
+                newFragment = fragmentManager.findFragmentByTag(MapsFragment.class.getName());
+                if (newFragment == null)
+                    newFragment = new MapsFragment();
+                tag = MapsFragment.class.getName();
+                fragmentState = MAPS;
+                break;
+            default:
+                return;
+        }
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.fragment_container, newFragment, tag)
+                .addToBackStack(null)
+                .commit();
     }
 }
