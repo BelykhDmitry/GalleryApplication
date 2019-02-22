@@ -9,16 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class PhotosFragment extends Fragment {
+public class ShowAlbumFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_photos, container, false);
-    }
-
-    interface OnPhotosFragmentInteractionLustener {
+        return inflater.inflate(R.layout.fragment_show_album, container, false);
     }
 
 }

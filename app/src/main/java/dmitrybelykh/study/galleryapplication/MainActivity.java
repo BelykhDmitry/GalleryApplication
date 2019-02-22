@@ -1,26 +1,35 @@
 package dmitrybelykh.study.galleryapplication;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.AccelerateInterpolator;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.transition.Explode;
+import androidx.transition.Fade;
+import androidx.transition.Slide;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigationAnimation {
 
     private FloatingActionButton fab;
 
     private MyAnimation myAnimation;
+    private BottomNavigationView navigationView;
 
     private int fragmentState = 1;
 
@@ -31,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //setupTheme();
         super.onCreate(savedInstanceState);
+        //setupTheme();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -44,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         fab = findViewById(R.id.fab);
 
-        BottomNavigationView navigationView = findViewById(R.id.navigation);
+        navigationView = findViewById(R.id.navigation);
         navigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_albums:
@@ -69,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
 //        Resources.Theme theme = getTheme();
 //        theme.applyStyle(R.style.LightTheme, true);
 //    }
+
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,9 +142,34 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return;
         }
+        newFragment.setEnterTransition(new Fade());
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, tag)
                 .addToBackStack(null)
                 .commit();
     }
+
+    private void hideMenu() {
+        navigationView.animate().translationY(200f)
+                .setDuration(500)
+                .setInterpolator(new AccelerateInterpolator());
+    }
+
+    private void openMenu() {
+        navigationView.animate().translationY(0f)
+                .setDuration(500)
+                .setInterpolator(new AccelerateInterpolator());
+    }
+
+    @Override
+    public void hideBottomMenu() {
+        hideMenu();
+    }
+
+    @Override
+    public void showBottomMenu() {
+        openMenu();
+    }
+
+
 }
