@@ -1,5 +1,6 @@
 package dmitrybelykh.study.galleryapplication.Utils;
 
+import android.net.Uri;
 import android.os.Environment;
 
 import java.io.File;
@@ -57,6 +58,33 @@ public class DataStorageReader {
         });
 
         return pictures;
+    }
+
+    public void getFilesUriList(File path, ArrayList<Uri> targetList) throws IOException {
+        if (path == null) return;
+        ArrayList<Uri> pictures = new ArrayList<>();
+        FileFilter filter = new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                String[] formats = {".jpg", ".png", ".bmp"};
+                String name = pathname.getName();
+                boolean accept = false;
+                for (int i = 0; i < formats.length; i++) {
+                    accept = name.contains(formats[i]);
+                    if (accept)
+                        break;
+                }
+                return accept;
+            }
+        };
+        path = walkFileTree(path, new FileVisitor() {
+
+            @Override
+            public void visitFile(File file) {
+                if (filter.accept(file))
+                    targetList.add(Uri.fromFile(file));
+            }
+        });
     }
 
     interface FileVisitor {
