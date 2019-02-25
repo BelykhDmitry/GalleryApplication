@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
 
     private int fragmentState = 1;
 
+    private static final String STATE = "fragmentState";
     private static final int ALBUMS = 1;
     private static final int PHOTOS = 2;
     private static final int MAPS = 3;
@@ -71,7 +72,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
             }
             return false;
         });
-        openFragment(ALBUMS);
+        if (savedInstanceState == null) {
+            openFragment(ALBUMS);
+        } else {
+            fragmentState = savedInstanceState.getInt(STATE);
+        }
     }
 
 //    private void setupTheme() { //Not working
@@ -81,8 +86,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
 
 
     @Override
-    protected void onPostResume() {
-        super.onPostResume();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE, fragmentState);
     }
 
     @Override

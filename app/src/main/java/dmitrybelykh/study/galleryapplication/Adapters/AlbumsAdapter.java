@@ -1,7 +1,6 @@
 package dmitrybelykh.study.galleryapplication.Adapters;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +31,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new ViewHolder(LayoutInflater
                 .from(mContext)
-                .inflate(R.layout.album_item, parent, false)
+                .inflate(R.layout.item_album, parent, false)
         );
     }
 
