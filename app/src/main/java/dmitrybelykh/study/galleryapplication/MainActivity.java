@@ -73,7 +73,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
             return false;
         });
         if (savedInstanceState == null) {
-            openFragment(ALBUMS);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container,
+                            new AlbumsFragment(),
+                            AlbumsFragment.class.getName())
+                    .commit();
         } else {
             fragmentState = savedInstanceState.getInt(STATE);
         }
