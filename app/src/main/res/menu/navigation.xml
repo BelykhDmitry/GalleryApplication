@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_albums"
+        android:icon="@drawable/ic_photo_library_black_24dp"
+        android:title="Albums" />
+    <item
+        android:id="@+id/navigation_photos"
+        android:icon="@drawable/ic_photo_black_24dp"
+        android:title="All Photos" />
+    <item
+        android:id="@+id/navigation_map"
+        android:icon="@drawable/ic_satellite_black_24dp"
+        android:title="Map" />
+</menu>
