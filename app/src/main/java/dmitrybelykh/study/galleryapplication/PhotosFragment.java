@@ -4,15 +4,6 @@ package dmitrybelykh.study.galleryapplication;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import dmitrybelykh.study.galleryapplication.Adapters.PictureAdapter;
-import dmitrybelykh.study.galleryapplication.Models.Picture;
-import dmitrybelykh.study.galleryapplication.Utils.DataStorageReader;
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +13,15 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import dmitrybelykh.study.galleryapplication.Adapters.PictureAdapter;
+import dmitrybelykh.study.galleryapplication.Models.Picture;
+import dmitrybelykh.study.galleryapplication.Utils.DataStorageReader;
+import dmitrybelykh.study.galleryapplication.Utils.PermissionManager;
 
 public class PhotosFragment extends Fragment {
     public static final String LOG_TAG = PhotosFragment.class.getName();
@@ -73,20 +73,22 @@ public class PhotosFragment extends Fragment {
         super.onResume();
         handler = new Handler();
         final ArrayList<Uri> list = new ArrayList<>();
-        handler.post(() -> {
-            try {
-                new DataStorageReader().getFilesUriList(
-                        DataStorageReader.getPicturesPublicDirectory(), list);
-                Log.d(LOG_TAG, "Uri's finished: " + list.size());
-                mList.clear();
-                for (Uri uri : list) {
-                    mList.add(new Picture(uri));
+        if (PermissionManager.requestForPermission(getActivity())) {
+            handler.post(() -> {
+                try {
+                    new DataStorageReader().getFilesUriList(
+                            DataStorageReader.getPicturesPublicDirectory(), list);
+                    Log.d(LOG_TAG, "Uri's finished: " + list.size());
+                    mList.clear();
+                    for (Uri uri : list) {
+                        mList.add(new Picture(uri));
+                    }
+                    mPictureAdapter.notifyDataSetChanged();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                mPictureAdapter.notifyDataSetChanged();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+            });
+        }
     }
 
     @Override

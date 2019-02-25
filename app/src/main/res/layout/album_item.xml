@@ -4,11 +4,11 @@
     android:id="@+id/album_item_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="8dp"
     android:maxHeight="200dp"
     app:cardElevation="10dp"
     app:strokeColor="@color/colorPrimaryDark"
-    app:strokeWidth="8dp"
-    android:layout_margin="8dp">
+    app:strokeWidth="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,13 +30,12 @@
             android:id="@+id/album_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintWidth_max="wrap"
             android:background="@drawable/textview_backgraound"
-            android:paddingStart="8dp"
-            android:paddingLeft="8dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="8dp"
-            android:paddingRight="8dp"
+            android:paddingStart="2dp"
+            android:paddingLeft="2dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="2dp"
+            android:paddingRight="2dp"
             android:shadowColor="@color/colorPrimaryDark"
             android:shadowDx="2"
             android:shadowDy="2"
@@ -49,7 +48,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_max="wrap" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import dmitrybelykh.study.galleryapplication.Adapters.AlbumsAdapter;
 import dmitrybelykh.study.galleryapplication.Models.Album;
 import dmitrybelykh.study.galleryapplication.Utils.DataStorageReader;
+import dmitrybelykh.study.galleryapplication.Utils.PermissionManager;
 
 public class AlbumsFragment extends Fragment {
 
@@ -102,6 +103,7 @@ public class AlbumsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
     }
 
     @Override
@@ -118,60 +120,21 @@ public class AlbumsFragment extends Fragment {
     }
 
     private void generateAlbumData() {
-        if (requestForPermission()) {
-            File f = DataStorageReader.getPicturesPublicDirectory();
-            String[] str = f.list();
-            Log.d(LOG_TAG, f.getAbsolutePath());
-            ArrayList<File> files = null;
-            if (str != null) {
-                try {
-                    files = new DataStorageReader().getFilesList(f);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (files != null) {
-                Log.d(LOG_TAG, "ArrayList: " + files.size());
-                for (File file : files) {
-                    Log.d(LOG_TAG, "File: " + file.getAbsolutePath());
-                }
-            }
+        if (PermissionManager.requestForPermission(getActivity())) {
+            mData.clear();
+            mData.add(new Album("Sunset", R.drawable.sunrise));
+            mData.add(new Album("Sunrise", R.drawable.sunrise));
+            mData.add(new Album("Pictures", R.drawable.sunrise));
+            mData.add(new Album("Sunset1", R.drawable.sunrise));
+            mData.add(new Album("Sunset2", R.drawable.sunrise));
+            mData.add(new Album("Sunset3", R.drawable.sunrise));
+            adapter.notifyDataSetChanged();
+        } else {
+            // showError();
         }
-        mData.add(new Album("Sunset", R.drawable.sunrise));
-        mData.add(new Album("Sunrise", R.drawable.sunrise));
-        mData.add(new Album("Pictures", R.drawable.sunrise));
-        mData.add(new Album("Sunset1", R.drawable.sunrise));
-        mData.add(new Album("Sunset2", R.drawable.sunrise));
-        mData.add(new Album("Sunset3", R.drawable.sunrise));
-        adapter.notifyDataSetChanged();
+
     }
 
     interface OnAlbumsFragmentInteractionLustener {
-    }
-
-    public final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE};
-    public final int EXTERNAL_REQUEST = 138;
-
-    public boolean requestForPermission() {
-
-        boolean isPermissionOn = true;
-        final int version = Build.VERSION.SDK_INT;
-        if (version >= 23) {
-            if (!canAccessExternalSd()) {
-                isPermissionOn = false;
-                requestPermissions(EXTERNAL_PERMS, EXTERNAL_REQUEST);
-            }
-        }
-
-        return isPermissionOn;
-    }
-
-    public boolean canAccessExternalSd() {
-        return (hasPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE));
-    }
-
-    private boolean hasPermission(String perm) {
-        return (PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(getActivity(), perm));
     }
 }
