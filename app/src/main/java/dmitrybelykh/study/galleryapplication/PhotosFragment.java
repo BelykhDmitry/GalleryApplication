@@ -27,6 +27,8 @@ public class PhotosFragment extends Fragment {
     public static final String LOG_TAG = PhotosFragment.class.getName();
 
     private WeakReference<BottomNavigationAnimation> weakBottomNavigationAnimation;
+    private WeakReference<BottomNavigationSelector> weakBottomNaviagationSelector;
+
 
     private RecyclerView mPictureRecyclerView;
     private PictureAdapter mPictureAdapter;
@@ -71,6 +73,7 @@ public class PhotosFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        weakBottomNaviagationSelector.get().selectMenuItem(BottomNavigationSelector.PHOTOS);
         handler = new Handler();
         final ArrayList<Uri> list = new ArrayList<>();
         if (PermissionManager.requestForPermission(getActivity())) {
@@ -92,20 +95,18 @@ public class PhotosFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         weakBottomNavigationAnimation =
                 new WeakReference<BottomNavigationAnimation>((BottomNavigationAnimation) context);
+        weakBottomNaviagationSelector =
+                new WeakReference<BottomNavigationSelector>((BottomNavigationSelector) context);
     }
 
     @Override
     public void onDetach() {
         weakBottomNavigationAnimation.clear();
+        weakBottomNaviagationSelector.clear();
         super.onDetach();
     }
 }

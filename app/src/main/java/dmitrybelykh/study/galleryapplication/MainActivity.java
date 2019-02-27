@@ -24,7 +24,8 @@ import androidx.transition.Explode;
 import androidx.transition.Fade;
 import androidx.transition.Slide;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationAnimation {
+public class MainActivity extends AppCompatActivity implements BottomNavigationAnimation,
+        BottomNavigationSelector {
 
     private FloatingActionButton fab;
 
@@ -34,9 +35,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
     private int fragmentState = 1;
 
     private static final String STATE = "fragmentState";
-    private static final int ALBUMS = 1;
-    private static final int PHOTOS = 2;
-    private static final int MAPS = 3;
 
 
     @Override
@@ -182,4 +180,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
     }
 
 
+    @Override
+    public void selectMenuItem(int itemNumber) {
+        if (fragmentState != itemNumber) {
+            fragmentState = itemNumber;
+            switch (fragmentState) {
+                case ALBUMS:
+                    navigationView.setSelectedItemId(R.id.navigation_albums);
+                    break;
+                case PHOTOS:
+                    navigationView.setSelectedItemId(R.id.navigation_photos);
+                    break;
+                case MAPS:
+                    navigationView.setSelectedItemId(R.id.navigation_map);
+                    break;
+            }
+        }
+    }
 }

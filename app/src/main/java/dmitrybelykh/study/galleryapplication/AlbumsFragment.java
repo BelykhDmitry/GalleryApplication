@@ -37,6 +37,7 @@ public class AlbumsFragment extends Fragment {
     private RecyclerView mAlbumsRecyclerView;
     private ArrayList<Album> mData = new ArrayList<>();
     private WeakReference<BottomNavigationAnimation> weakBottomNavigationAnimation;
+    private WeakReference<BottomNavigationSelector> weakBottomNaviagationSelector;
     private AlbumsAdapter adapter;
     private FloatingActionButton fab;
 
@@ -103,7 +104,7 @@ public class AlbumsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        weakBottomNaviagationSelector.get().selectMenuItem(BottomNavigationSelector.ALBUMS);
     }
 
     @Override
@@ -111,11 +112,14 @@ public class AlbumsFragment extends Fragment {
         super.onAttach(context);
         weakBottomNavigationAnimation =
                 new WeakReference<BottomNavigationAnimation>((BottomNavigationAnimation) context);
+        weakBottomNaviagationSelector =
+                new WeakReference<BottomNavigationSelector>((BottomNavigationSelector) context);
     }
 
     @Override
     public void onDetach() {
         weakBottomNavigationAnimation.clear();
+        weakBottomNaviagationSelector.clear();
         super.onDetach();
     }
 
