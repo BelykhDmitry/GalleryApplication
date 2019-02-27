@@ -127,35 +127,35 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment newFragment = null;
         String tag = null;
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
         switch (fragmentNumber) {
             case ALBUMS:
-                newFragment = fragmentManager.findFragmentByTag(AlbumsFragment.class.getName());
+                tag = AlbumsFragment.class.getName();
+                newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
                     newFragment = new AlbumsFragment();
-                tag = AlbumsFragment.class.getName();
                 fragmentState = ALBUMS;
                 break;
             case PHOTOS:
-                newFragment = fragmentManager.findFragmentByTag(PhotosFragment.class.getName());
+                tag = PhotosFragment.class.getName();
+                newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
                     newFragment = new PhotosFragment();
-                tag = PhotosFragment.class.getName();
                 fragmentState = PHOTOS;
                 break;
             case MAPS:
-                newFragment = fragmentManager.findFragmentByTag(MapsFragment.class.getName());
+                tag = MapsFragment.class.getName();
+                newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
                     newFragment = new MapsFragment();
-                tag = MapsFragment.class.getName();
                 fragmentState = MAPS;
                 break;
             default:
                 return;
         }
         newFragment.setEnterTransition(new Fade());
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, tag)
-                .addToBackStack(null)
+                .addToBackStack(tag)
                 .commit();
     }
 
