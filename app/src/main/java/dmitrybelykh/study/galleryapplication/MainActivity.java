@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AccelerateInterpolator;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -29,8 +30,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
 
     private FloatingActionButton fab;
 
-    private MyAnimation myAnimation;
     private BottomNavigationView navigationView;
+    private AppBarLayout appBarLayout;
 
     private int fragmentState = 1;
 
@@ -39,18 +40,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setAllowReturnTransitionOverlap(false);
+        getWindow().setAllowEnterTransitionOverlap(false);
         super.onCreate(savedInstanceState);
         //setupTheme();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Point point = new Point();
-        getWindowManager().getDefaultDisplay().getSize(point);
-        myAnimation = new MyAnimation(point);
-        myAnimation.setAnimationSpeed(5f);
-
         fab = findViewById(R.id.fab);
+
+        appBarLayout = findViewById(R.id.app_bar);
 
         navigationView = findViewById(R.id.navigation);
         navigationView.setOnNavigationItemSelectedListener(item -> {
@@ -102,12 +102,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             openSettings();
             return true;
@@ -135,10 +131,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
                 fragmentState = ALBUMS;
                 break;
             case PHOTOS:
-                tag = PhotosFragment.class.getName();
+                tag = TabFragment.class.getName();
                 newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
-                    newFragment = new PhotosFragment();
+                    newFragment = new TabFragment();
                 fragmentState = PHOTOS;
                 break;
             case MAPS:
@@ -158,12 +154,18 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
     }
 
     private void hideMenu() {
+//        appBarLayout.animate().translationY(-200f)
+//                .setDuration(500)
+//                .setInterpolator(new AccelerateInterpolator());
         navigationView.animate().translationY(200f)
                 .setDuration(500)
                 .setInterpolator(new AccelerateInterpolator());
     }
 
     private void openMenu() {
+//        appBarLayout.animate().translationY(0f)
+//                .setDuration(500)
+//                .setInterpolator(new AccelerateInterpolator());
         navigationView.animate().translationY(0f)
                 .setDuration(500)
                 .setInterpolator(new AccelerateInterpolator());

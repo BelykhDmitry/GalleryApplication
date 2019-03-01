@@ -1,14 +1,20 @@
 package dmitrybelykh.study.galleryapplication;
 
 
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -18,12 +24,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import dmitrybelykh.study.galleryapplication.Adapters.PictureAdapter;
+import androidx.transition.ChangeBounds;
+import dmitrybelykh.study.galleryapplication.Adapters.PhotoAdapter;
 import dmitrybelykh.study.galleryapplication.Models.Picture;
 import dmitrybelykh.study.galleryapplication.Utils.DataStorageReader;
 import dmitrybelykh.study.galleryapplication.Utils.PermissionManager;
 
 public class PhotosFragment extends Fragment {
+
     public static final String LOG_TAG = PhotosFragment.class.getName();
 
     private WeakReference<BottomNavigationAnimation> weakBottomNavigationAnimation;
@@ -31,9 +39,13 @@ public class PhotosFragment extends Fragment {
 
 
     private RecyclerView mPictureRecyclerView;
-    private PictureAdapter mPictureAdapter;
+    private PhotoAdapter mPictureAdapter;
     final private ArrayList<Picture> mList = new ArrayList<>();
-    private Handler handler;
+    //private Handler handler;
+
+    public PhotosFragment() {
+        Log.d(LOG_TAG, "Constructor PhotosFragment");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,8 +59,15 @@ public class PhotosFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        mPictureAdapter.onDetachListener();
+        super.onDestroyView();
+    }
+
     private void setupRecyclerView() {
-        mPictureAdapter = new PictureAdapter(getContext(), mList);
+        mPictureAdapter = new PhotoAdapter(getContext(), mList);
+        mPictureAdapter.onAttachListener(listener);
         mPictureRecyclerView.setAdapter(mPictureAdapter);
 
         int columnCount = getResources().getInteger(R.integer.grid_column_count);
@@ -65,6 +84,37 @@ public class PhotosFragment extends Fragment {
                 }
             }
         });
+        mPictureRecyclerView.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                View view = rv.findChildViewUnder(e.getX(), e.getY());
+                Log.d(LOG_TAG, Integer.toString(e.getAction()));
+                if (view != null)
+                    switch (e.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            view.animate()
+                                    .setDuration(200)
+                                    .scaleX(0.9f)
+                                    .scaleY(0.9f);
+                            break;
+                        //case MotionEvent.ACTION_MOVE:
+                        case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_CANCEL:
+                            view.animate()
+                                    .setDuration(200)
+                                    .scaleX(1f)
+                                    .scaleY(1f);
+                            break;
+
+                    }
+                return super.onInterceptTouchEvent(rv, e);
+            }
+
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                super.onTouchEvent(rv, e);
+            }
+        });
     }
 
     interface OnPhotosFragmentInteractionLustener {
@@ -74,10 +124,9 @@ public class PhotosFragment extends Fragment {
     public void onResume() {
         super.onResume();
         weakBottomNaviagationSelector.get().selectMenuItem(BottomNavigationSelector.PHOTOS);
-        handler = new Handler();
         final ArrayList<Uri> list = new ArrayList<>();
         if (PermissionManager.requestForPermission(getActivity())) {
-            handler.post(() -> {
+            new Handler().post(() -> {
                 try {
                     new DataStorageReader().getFilesUriList(
                             DataStorageReader.getPicturesPublicDirectory(), list);
@@ -92,6 +141,7 @@ public class PhotosFragment extends Fragment {
                 }
             });
         }
+        weakBottomNavigationAnimation.get().showBottomMenu();
     }
 
     @Override
@@ -109,4 +159,12 @@ public class PhotosFragment extends Fragment {
         weakBottomNaviagationSelector.clear();
         super.onDetach();
     }
+
+    PhotoAdapter.OnItemClickListener listener = (picture, imageView) -> {
+        Intent intent = new Intent(getActivity(), PhotoPreviewActivity.class);
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "transition_photo");
+        Bundle bundle = options.toBundle();
+        intent.putExtra("image_uri", picture.getPictureUri());
+        startActivity(intent, options.toBundle());
+    };
 }

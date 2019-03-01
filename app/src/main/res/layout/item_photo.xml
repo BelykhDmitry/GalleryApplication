@@ -14,8 +14,31 @@
         android:id="@+id/photo_image_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:maxHeight="200dp"
-        android:adjustViewBounds="true" />
+        android:scaleType="centerCrop"
+        android:transitionName="@string/photo_transition_name" />
+
+    <ImageSwitcher
+        android:id="@+id/imageSwitcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:padding="8dp">
+
+        <ImageView
+            android:id="@+id/no_favorits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_star_border_black_24dp" />
+
+        <ImageView
+            android:id="@+id/in_favorites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/colorAccent"
+            app:srcCompat="@drawable/ic_star_black_24dp" />
+    </ImageSwitcher>
 
 </com.google.android.material.card.MaterialCardView>
