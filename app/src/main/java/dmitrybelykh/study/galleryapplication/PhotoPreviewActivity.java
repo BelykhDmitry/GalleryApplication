@@ -111,6 +111,8 @@ public class PhotoPreviewActivity extends AppCompatActivity {
             mScaleFactor *= detector.getScaleFactor();
             mScaleFactor = Math.max(1f,
                     Math.min(mScaleFactor, 10.0f));
+            imageView.setPivotX(detector.getFocusX());
+            imageView.setPivotY(detector.getFocusY());
             imageView.setScaleX(mScaleFactor);
             imageView.setScaleY(mScaleFactor);
             return true;
