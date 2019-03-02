@@ -4,6 +4,7 @@ package dmitrybelykh.study.galleryapplication;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 
@@ -41,7 +44,11 @@ public class PhotosFragment extends Fragment {
     private RecyclerView mPictureRecyclerView;
     private PhotoAdapter mPictureAdapter;
     final private ArrayList<Picture> mList = new ArrayList<>();
-    //private Handler handler;
+
+    private ViewGroup root;
+    private View sharedView;
+    private ViewGroup sharedViewParent;
+    private ViewGroup.LayoutParams sharedLayoutParams;
 
     public PhotosFragment() {
         Log.d(LOG_TAG, "Constructor PhotosFragment");
@@ -52,6 +59,7 @@ public class PhotosFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_photos, container, false);
+        root = (ViewGroup) rootView;
         mPictureRecyclerView = rootView.findViewById(R.id.photos_recycler_view);
 
         setupRecyclerView();
@@ -84,37 +92,6 @@ public class PhotosFragment extends Fragment {
                 }
             }
         });
-        mPictureRecyclerView.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                View view = rv.findChildViewUnder(e.getX(), e.getY());
-                Log.d(LOG_TAG, Integer.toString(e.getAction()));
-                if (view != null)
-                    switch (e.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            view.animate()
-                                    .setDuration(200)
-                                    .scaleX(0.9f)
-                                    .scaleY(0.9f);
-                            break;
-                        //case MotionEvent.ACTION_MOVE:
-                        case MotionEvent.ACTION_UP:
-                        case MotionEvent.ACTION_CANCEL:
-                            view.animate()
-                                    .setDuration(200)
-                                    .scaleX(1f)
-                                    .scaleY(1f);
-                            break;
-
-                    }
-                return super.onInterceptTouchEvent(rv, e);
-            }
-
-            @Override
-            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
-                super.onTouchEvent(rv, e);
-            }
-        });
     }
 
     interface OnPhotosFragmentInteractionLustener {
@@ -142,6 +119,19 @@ public class PhotosFragment extends Fragment {
             });
         }
         weakBottomNavigationAnimation.get().showBottomMenu();
+        restoreSharedElement();
+    }
+
+    void restoreSharedElement() {
+        if (sharedView != null) {
+            root.removeView(sharedView);
+            sharedViewParent.addView(sharedView, 0);
+            sharedView.setLayoutParams(sharedLayoutParams);
+            // Clear shared elements
+            sharedView = null;
+            sharedViewParent = null;
+            sharedLayoutParams = null;
+        }
     }
 
     @Override
@@ -161,10 +151,37 @@ public class PhotosFragment extends Fragment {
     }
 
     PhotoAdapter.OnItemClickListener listener = (picture, imageView) -> {
-        Intent intent = new Intent(getActivity(), PhotoPreviewActivity.class);
-        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "transition_photo");
-        Bundle bundle = options.toBundle();
-        intent.putExtra("image_uri", picture.getPictureUri());
-        startActivity(intent, options.toBundle());
+        moveViewToRootRecyclerLayout(imageView);
+        imageView.post(() -> {
+            Intent intent = new Intent(getActivity(), PhotoPreviewActivity.class);
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageView, "transition_photo");
+            Bundle bundle = options.toBundle();
+            intent.putExtra("image_uri", picture.getPictureUri());
+            startActivity(intent, options.toBundle());
+        });
     };
+
+    void moveViewToRootRecyclerLayout(View view) {
+        // Save shared element params
+        sharedView = view;
+        sharedViewParent = (ViewGroup) view.getParent();
+        sharedLayoutParams = view.getLayoutParams();
+        // Get view Rectangle
+        Rect imageRect = new Rect();
+        view.getGlobalVisibleRect(imageRect);
+        // Get root Rectangle
+        Rect rootRectangle = new Rect();
+        root.getGlobalVisibleRect(rootRectangle);
+        // Remove view from Root
+        ((ViewGroup) view.getParent()).removeView(view);
+        // Get view layout params
+        RelativeLayout.LayoutParams layoutParams =
+                new RelativeLayout.LayoutParams(imageRect.width(), imageRect.height());
+        // Setup layout params
+        layoutParams.setMargins(imageRect.left, imageRect.top - rootRectangle.top, 0, 0);
+        // Add view to the root
+        root.addView(view);
+        // Set layout params to the view
+        view.setLayoutParams(layoutParams);
+    }
 }
