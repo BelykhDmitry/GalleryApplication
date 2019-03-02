@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AccelerateInterpolator;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -24,35 +25,32 @@ import androidx.transition.Explode;
 import androidx.transition.Fade;
 import androidx.transition.Slide;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationAnimation {
+public class MainActivity extends AppCompatActivity implements BottomNavigationAnimation,
+        BottomNavigationSelector {
 
     private FloatingActionButton fab;
 
-    private MyAnimation myAnimation;
     private BottomNavigationView navigationView;
+    private AppBarLayout appBarLayout;
 
     private int fragmentState = 1;
 
     private static final String STATE = "fragmentState";
-    private static final int ALBUMS = 1;
-    private static final int PHOTOS = 2;
-    private static final int MAPS = 3;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setAllowReturnTransitionOverlap(false);
+        getWindow().setAllowEnterTransitionOverlap(false);
         super.onCreate(savedInstanceState);
         //setupTheme();
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Point point = new Point();
-        getWindowManager().getDefaultDisplay().getSize(point);
-        myAnimation = new MyAnimation(point);
-        myAnimation.setAnimationSpeed(5f);
-
         fab = findViewById(R.id.fab);
+
+        appBarLayout = findViewById(R.id.app_bar);
 
         navigationView = findViewById(R.id.navigation);
         navigationView.setOnNavigationItemSelectedListener(item -> {
@@ -73,7 +71,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
             return false;
         });
         if (savedInstanceState == null) {
-            openFragment(ALBUMS);
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container,
+                            new AlbumsFragment(),
+                            AlbumsFragment.class.getName())
+                    .commit();
         } else {
             fragmentState = savedInstanceState.getInt(STATE);
         }
@@ -100,12 +102,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             openSettings();
             return true;
@@ -123,45 +121,51 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment newFragment = null;
         String tag = null;
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
         switch (fragmentNumber) {
             case ALBUMS:
-                newFragment = fragmentManager.findFragmentByTag(AlbumsFragment.class.getName());
+                tag = AlbumsFragment.class.getName();
+                newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
                     newFragment = new AlbumsFragment();
-                tag = AlbumsFragment.class.getName();
                 fragmentState = ALBUMS;
                 break;
             case PHOTOS:
-                newFragment = fragmentManager.findFragmentByTag(PhotosFragment.class.getName());
+                tag = TabFragment.class.getName();
+                newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
-                    newFragment = new PhotosFragment();
-                tag = PhotosFragment.class.getName();
+                    newFragment = new TabFragment();
                 fragmentState = PHOTOS;
                 break;
             case MAPS:
-                newFragment = fragmentManager.findFragmentByTag(MapsFragment.class.getName());
+                tag = MapsFragment.class.getName();
+                newFragment = fragmentManager.findFragmentByTag(tag);
                 if (newFragment == null)
                     newFragment = new MapsFragment();
-                tag = MapsFragment.class.getName();
                 fragmentState = MAPS;
                 break;
             default:
                 return;
         }
         newFragment.setEnterTransition(new Fade());
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.fragment_container, newFragment, tag)
-                .addToBackStack(null)
+                .addToBackStack(tag)
                 .commit();
     }
 
     private void hideMenu() {
+//        appBarLayout.animate().translationY(-200f)
+//                .setDuration(500)
+//                .setInterpolator(new AccelerateInterpolator());
         navigationView.animate().translationY(200f)
                 .setDuration(500)
                 .setInterpolator(new AccelerateInterpolator());
     }
 
     private void openMenu() {
+//        appBarLayout.animate().translationY(0f)
+//                .setDuration(500)
+//                .setInterpolator(new AccelerateInterpolator());
         navigationView.animate().translationY(0f)
                 .setDuration(500)
                 .setInterpolator(new AccelerateInterpolator());
@@ -178,4 +182,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationA
     }
 
 
+    @Override
+    public void selectMenuItem(int itemNumber) {
+        if (fragmentState != itemNumber) {
+            fragmentState = itemNumber;
+            switch (fragmentState) {
+                case ALBUMS:
+                    navigationView.setSelectedItemId(R.id.navigation_albums);
+                    break;
+                case PHOTOS:
+                    navigationView.setSelectedItemId(R.id.navigation_photos);
+                    break;
+                case MAPS:
+                    navigationView.setSelectedItemId(R.id.navigation_map);
+                    break;
+            }
+        }
+    }
 }

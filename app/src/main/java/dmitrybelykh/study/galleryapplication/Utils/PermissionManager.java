@@ -15,7 +15,6 @@ public class PermissionManager {
     public static final int EXTERNAL_REQUEST = 138;
 
     public static boolean requestForPermission(Activity context) {
-
         boolean isPermissionOn = true;
         final int version = Build.VERSION.SDK_INT;
         if (version >= 23) {
